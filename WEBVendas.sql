@@ -1,0 +1,66 @@
+USE [master];
+GO
+
+CREATE DATABASE Vendas CONTAINMENT = NONE ON PRIMARY
+(
+	NAME = N'Vendas'
+	, FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\Vendas.mdf'
+	, SIZE = 8192 KB
+	, MAXSIZE = UNLIMITED
+	, FILEGROWTH = 65536 KB
+) LOG ON
+(
+	NAME = N'Vendas_log'
+	, FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\Vendas_log.ldf'
+	, SIZE = 8192 KB
+	, MAXSIZE = 2048 GB
+	, FILEGROWTH = 65536 KB
+);
+GO
+
+USE [Vendas];
+GO
+
+CREATE TABLE dbo.Documento
+(
+             Numero     INT IDENTITY(1, 1) NOT NULL
+           , Total      DECIMAL(10, 2) NOT NULL
+           , Comfirmado BIT NOT NULL
+           , CONSTRAINT PK_Documento PRIMARY KEY CLUSTERED(Numero ASC)
+             WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)
+ON [PRIMARY];
+GO
+
+CREATE TABLE dbo.Item
+(
+             CodigoProduto   INT NOT NULL
+           , NumeroDocumento INT NOT NULL
+           , CONSTRAINT PK_Item PRIMARY KEY CLUSTERED(CodigoProduto ASC, NumeroDocumento ASC)
+             WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)
+ON [PRIMARY];
+GO
+
+CREATE TABLE dbo.Produto
+(
+             Codigo    INT IDENTITY(1, 1) NOT NULL
+           , Descricao VARCHAR(50) NOT NULL
+           , Preco     DECIMAL(10, 2) NOT NULL
+           , CONSTRAINT PK_Produto PRIMARY KEY CLUSTERED(Codigo ASC)
+             WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)
+ON [PRIMARY];
+GO
+ALTER TABLE dbo.Item
+WITH CHECK
+ADD CONSTRAINT FK_Item_Documento FOREIGN KEY(NumeroDocumento) REFERENCES dbo.Documento(Numero);
+GO
+ALTER TABLE dbo.Item CHECK CONSTRAINT FK_Item_Documento;
+GO
+ALTER TABLE dbo.Item
+WITH CHECK
+ADD CONSTRAINT FK_Item_Produto FOREIGN KEY(CodigoProduto) REFERENCES dbo.Produto(Codigo);
+GO
+ALTER TABLE dbo.Item CHECK CONSTRAINT FK_Item_Produto;
+GO
